@@ -40,13 +40,6 @@ target_include_directories(${PROJECT_NAME} INTERFACE
         ../../Libraries/CMSIS/Device/PY32F0xx/Include
 )
 
-if (USE_DSP)
-    target_link_libraries(${PROJECT_NAME} INTERFACE
-            ../../Libraries/CMSIS/DSP/Include
-            ../../Libraries/CMSIS/DSP/Include/dsp
-    )
-endif ()
-
 if (USE_LL_LIB)
     target_include_directories(${PROJECT_NAME} INTERFACE
             ../../Libraries/${MCU_NUMBER}_LL_Driver/Inc

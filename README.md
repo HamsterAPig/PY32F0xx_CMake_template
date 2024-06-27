@@ -173,7 +173,6 @@ make flash
 - [x] Support PY32F002B
 - [x] Support PY32F07x
 - [x] Support LL Option
-- [ ] Support DSP Option
 - [ ] Support FreeRTOS Option
 - [ ] Support EPaper Option
 
