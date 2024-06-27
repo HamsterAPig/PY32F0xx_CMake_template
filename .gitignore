@@ -1,3 +1,5 @@
 .vscode/
 /Build*
 /Temp*
+/cmake-build-*
+.idea

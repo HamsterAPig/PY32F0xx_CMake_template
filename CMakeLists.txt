@@ -32,7 +32,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 enable_language(C ASM CXX)
 
 # 项目名称和版本
-project(app VERSION 1.0)
+project(PY32F0xx_Template VERSION 1.0)
 
 # 启用printf float支持
 if(ENABLE_PRINTF_FLOAT)
