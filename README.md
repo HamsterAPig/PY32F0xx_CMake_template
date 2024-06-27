@@ -1,9 +1,9 @@
-# py32f0-template
+# PY32F0xx_CMake_template
 
 * Template project for Puya PY32F0 MCU
 * Supports GNU Arm Embedded Toolchain
 * Supports J-Link and DAPLink/PyOCD programmers
-* Supports IDE: VSCode
+* Supports IDE: VSCode, Clion and other IDEs that support CMake
 
 # Puya PY32F0 Family
 
@@ -68,16 +68,13 @@ Frequency up to 72 MHz, 128 Kbytes of Flash memory, 16 Kbytes of SRAM, with more
 │   ├── PY32F0xx_HAL_Driver     # PY32F002A/003/030 HAL library
 │   ├── PY32F0xx_LL_BSP         # PY32F002A/003/030 LL BSP
 │   └── PY32F0xx_LL_Driver      # PY32F002A/003/030 LL library
-|
-├── Makefile                    # Make config
 ├── Misc
 │   ├── Flash
 │   │   ├── JLinkDevices        # JLink flash loaders
 │   │   └── Sources             # Flash algorithm source code
 │   ├── Puya.PY32F0xx_DFP.x.pack # DFP pack file for PyOCD
 │   └── SVD                     # SVD files
-├── README.md
-├── rules.mk                    # Pre-defined rules include in Makefile 
+├── README.mdMakefile 
 └── User                        # User application code
 ```
 
@@ -104,12 +101,15 @@ cd /opt/gcc-arm/
 sudo chown -R root:root arm-gnu-toolchain-12.2.rel1-x86_64-arm-none-eabi/
 ```
 
-## 2. Clone This Repository
-
+## 2. Create Your Project
+### Clone This Repo
 Clone this repository to local workspace
 ```bash
-git clone https://github.com/IOsetting/py32f0-template.git
+git clone https://github.com/HamsterAPig/PY32F0xx_CMake_template.git
 ```
+
+### Using This Repo as Template
+In the meantime, you can also create a copy of your own by clicking on `Use this template` above this repository
 
 ## 3. Install SEGGER J-Link Or PyOCD
 
@@ -150,57 +150,10 @@ This will install PyOCD into:
 ```
 In Ubuntu, .profile will take care of the PATH, run `source ~/.profile` to make pyocd command available
 
-## 4. Edit Makefile
-
-Change the settings in Makefile
-
-* **MCU_TYPE** The MCU type you are using
-* **USE_LL_LIB** Puya provides two sets of library, HAL and LL, set `USE_LL_LIB ?= y` to use LL instead of HAL.
-  * No LL Library for PY32F07x
-* **ENABLE_PRINTF_FLOAT** set it to `y` to `-u _printf_float` to link options. This will increase the binary size.
-* **USE_FREERTOS** Set `USE_FREERTOS ?= y` will include FreeRTOS in compilation
-* **USE_DSP** Include CMSIS DSP or not
-* **FLASH_PROGRM**
-  * If you use J-Link, `FLASH_PROGRM` can be jlink or pyocd
-  * If you use DAPLink, set `FLASH_PROGRM ?= pyocd`
-  * ST-LINK is not supported yet.
-* **ARM_TOOCHAIN** Make sure it points to the correct path of arm-none-eabi-gcc
-
-```makefile
-##### Project #####
-
-PROJECT			?= app
-# The path for generated files
-BUILD_DIR		= Build
-
-# MCU types: 
-#   PY32F002Ax5
-#   PY32F002Bx5
-#   PY32F003x6, PY32F003x8, 
-#   PY32F030x6, PY32F030x8, 
-#   PY32F072xB
-MCU_TYPE		= PY32F072xB
-
-##### Options #####
-
-# Use LL library instead of HAL, y:yes, n:no
-USE_LL_LIB        ?= n
-# Enable printf float %f support, y:yes, n:no
-ENABLE_PRINTF_FLOAT ?= n
-# Build with FreeRTOS, y:yes, n:no
-USE_FREERTOS      ?= n
-# Build with CMSIS DSP functions, y:yes, n:no
-USE_DSP           ?= n
-# Programmer, jlink or pyocd
-FLASH_PROGRM      ?= pyocd
-
-##### Toolchains #######
-ARM_TOOCHAIN      ?= /opt/gcc-arm/arm-gnu-toolchain-12.2.rel1-x86_64-arm-none-eabi/bin
-
-# path to JLinkExe
-JLINKEXE		?= /opt/SEGGER/JLink/JLinkExe
-# path to PyOCD
-PYOCD_EXE		?= pyocd
+## 4. Use CMake to Generate
+Use `CMake -D` to specify the generation of relevant definitions, as a example, you can run
+```shell
+cmake -DMCU_TYPE=PY32F030x8
 ```
 
 ## 5. Compiling And Flashing
@@ -215,51 +168,14 @@ V=1 make
 # flash
 make flash
 ```
-
-# Debugging In VSCode
-
-Install Cortex Debug extension, add a new configuration in launch.json, e.g.
-```
-{
-    "armToolchainPath": "/opt/gcc-arm/arm-gnu-toolchain-12.2.rel1-x86_64-arm-none-eabi/bin/",
-    "toolchainPrefix": "arm-none-eabi",
-    "name": "Cortex Debug",
-    "cwd": "${workspaceFolder}",
-    "executable": "${workspaceFolder}/Build/app.elf",
-    "request": "launch",        // can be launch or attach
-    "type": "cortex-debug",
-    "runToEntryPoint": "Reset_Handler", // "main" or other function name. runToMain is deprecated
-    "servertype": "jlink",  // jlink, openocd, pyocd, pe and stutil
-    "device": "PY32F030X8",
-    "interface": "swd",
-    "preLaunchTask": "build",  // Set this to run a task from tasks.json before starting a debug session
-    // "preLaunchCommands": ["Build all"], // Uncomment this if not using preLaunchTask
-    "svdFile": "${workspaceFolder}/Misc/SVD/py32f030xx.svd",  // svd for this part number
-    "showDevDebugOutput": "vscode", // parsed, raw, vscode:vscode log and raw
-    "swoConfig":
-    {
-        "enabled": true,
-        "cpuFrequency": 8000000, // Target CPU frequency in Hz
-        "swoFrequency":  4000000,
-        "source": "probe", // either be “probe” to get directly from the debug probe, 
-                           // or a serial port device to use a serial port external to the debug probe.
-        "decoders":
-        [
-            {
-                "label": "ITM port 0 output",
-                "type": "console",
-                "port": 0,
-                "showOnStartup": true,
-                "encoding": "ascii"
-            }
-        ]
-    }
-}
-```
-If Cortex Debug cannot find JLinkGDBServerCLExe, add the following line to settings.json
-```
-"cortex-debug.JLinkGDBServerPath": "/opt/SEGGER/JLink/JLinkGDBServerCLExe",
-```
+# Feature
+- [x] Support PY32F0xx
+- [ ] Support PY32F002B
+- [ ] Support PY32F07x
+- [ ] Support LL Option
+- [ ] Support DSP Option
+- [ ] Support FreeRTOS Option
+- [ ] Support EPaper Option
 
 # Try Other Examples
 
