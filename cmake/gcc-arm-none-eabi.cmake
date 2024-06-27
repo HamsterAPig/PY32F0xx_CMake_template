@@ -36,6 +36,7 @@ endif()
 
 set(ARCH_FLAGS "-mthumb -mcpu=cortex-m0plus")
 set(DEBUG_FLAGS "-gdwarf-3")
+message("Using link script is ${MCU_TYPE}.ld")
 set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} -T \"../Libraries/LDScripts/${MCU_TYPE}.ld\"")
 set(CMAKE_C_FLAGS "${ARCH_FLAGS} ${DEBUG_FLAGS} ${OPT_FLAGS} -Wall -ffunction-sections -fdata-sections")
 set(CMAKE_CXX_FLAGS "${ARCH_FLAGS} ${DEBUG_FLAGS} ${OPT_FLAGS} -Wall -ffunction-sections -fdata-sections")

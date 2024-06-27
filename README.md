@@ -170,9 +170,9 @@ make flash
 ```
 # Feature
 - [x] Support PY32F0xx
-- [ ] Support PY32F002B
-- [ ] Support PY32F07x
-- [ ] Support LL Option
+- [x] Support PY32F002B
+- [x] Support PY32F07x
+- [x] Support LL Option
 - [ ] Support DSP Option
 - [ ] Support FreeRTOS Option
 - [ ] Support EPaper Option

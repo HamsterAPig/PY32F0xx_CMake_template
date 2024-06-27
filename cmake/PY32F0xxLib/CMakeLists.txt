@@ -10,45 +10,68 @@ target_compile_definitions(${PROJECT_NAME} INTERFACE
         $<$<CONFIG:Debug>:DEBUG>
 )
 
+if (SELECTED_DEVICE MATCHES "^PY32F002Bx[0-9]$")
+    set(MCU_NUMBER "PY32F002B")
+elseif (SELECTED_DEVICE MATCHES "^PY32F002Ax[0-9]$" OR SELECTED_DEVICE MATCHES "^PY32F003x[0-9]$" OR SELECTED_DEVICE MATCHES "^PY32F030x[0-9]$")
+    set(MCU_NUMBER "PY32F0xx")
+elseif (SELECTED_DEVICE MATCHES "^PY32F071x[0-9]$" "^PY32F040x[0-9]$" "^PY32F072x[0-9]$")
+    set(MCU_NUMBER "PY32F07x")
+else ()
+    message(FATAL_ERROR "No match MCU_NUMBER")
+endif ()
+message("Using ${MCU_NUMBER} Series Lib")
+
+if (SELECTED_DEVICE MATCHES "^PY32F002Bx[0-9]$")
+    set(START_FILE_SUFFIX "py32f002b")
+elseif(SELECTED_DEVICE MATCHES "^PY32F002Ax[0-9]$")
+    set(START_FILE_SUFFIX "py32f002a")
+elseif (SELECTED_DEVICE MATCHES "^PY32F003x[0-9]$")
+    set(START_FILE_SUFFIX "py32f003")
+elseif (SELECTED_DEVICE MATCHES "^PY32F030x[0-9]$")
+    set(START_FILE_SUFFIX "py32f030")
+elseif (SELECTED_DEVICE MATCHES "^PY32F071x[0-9]$" "^PY32F040x[0-9]$" "^PY32F072x[0-9]$")
+    set(START_FILE_SUFFIX "py32f072")
+else ()
+    message(FATAL_ERROR "No match START_FILE_SUFFIX")
+endif ()
+
 target_include_directories(${PROJECT_NAME} INTERFACE
         ../../Libraries/CMSIS/Core/Include
         ../../Libraries/CMSIS/Device/PY32F0xx/Include
-        ../../Libraries/CMSIS/DSP/Include
-        ../../Libraries/CMSIS/DSP/Include/dsp
-        ../../Libraries/PY32F0xx_HAL_Driver/Inc
-        ../../Libraries/PY32F0xx_HAL_BSP/Inc
 )
 
+if (USE_DSP)
+    target_link_libraries(${PROJECT_NAME} INTERFACE
+            ../../Libraries/CMSIS/DSP/Include
+            ../../Libraries/CMSIS/DSP/Include/dsp
+    )
+endif ()
+
+if (USE_LL_LIB)
+    target_include_directories(${PROJECT_NAME} INTERFACE
+            ../../Libraries/${MCU_NUMBER}_LL_Driver/Inc
+            ../../Libraries/${MCU_NUMBER}_LL_BSP/Inc
+    )
+    file(GLOB SOURCES
+            "../../Libraries/${MCU_NUMBER}_LL_BSP/Src/*.c"
+            "../../Libraries/${MCU_NUMBER}_LL_Driver/Src/*.c"
+    )
+else ()
+    target_include_directories(${PROJECT_NAME} INTERFACE
+            ../../Libraries/${MCU_NUMBER}_HAL_Driver/Inc
+            ../../Libraries/${MCU_NUMBER}_HAL_BSP/Inc
+    )
+    file(GLOB SOURCES
+            "../../Libraries/${MCU_NUMBER}_HAL_BSP/Src/*.c"
+            "../../Libraries/${MCU_NUMBER}_HAL_Driver/Src/*.c"
+    )
+endif ()
+
+string(TOLOWER "${MCU_NUMBER}" LOWERCASE_MCU_NUMBER)
+message("Using start file is startup_${START_FILE_SUFFIX}.s")
+message("Using system file is system_${LOWERCASE_MCU_NUMBER}.c")
 target_sources(${PROJECT_NAME} INTERFACE
-        ../../Libraries/CMSIS/Device/PY32F0xx/Source/system_py32f0xx.c
-        ../../Libraries/CMSIS/Device/PY32F0xx/Source/gcc/startup_py32f030.s
-        ../../Libraries/PY32F0xx_HAL_BSP/Src/py32f0xx_bsp_clock.c
-        ../../Libraries/PY32F0xx_HAL_BSP/Src/py32f0xx_bsp_led.c
-        ../../Libraries/PY32F0xx_HAL_BSP/Src/py32f0xx_bsp_printf.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_adc.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_adc_ex.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_comp.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_cortex.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_crc.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_dma.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_exti.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_flash.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_gpio.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_i2c.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_irda.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_iwdg.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_led.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_lptim.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_pwr.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_rcc.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_rcc_ex.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_rtc.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_rtc_ex.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_spi.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_tim.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_tim_ex.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_uart.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_usart.c
-        ../../Libraries/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_wwdg.c
+        ${SOURCES}
+        ../../Libraries/CMSIS/Device/PY32F0xx/Source/system_${LOWERCASE_MCU_NUMBER}.c
+        ../../Libraries/CMSIS/Device/PY32F0xx/Source/gcc/startup_${START_FILE_SUFFIX}.s
 )
