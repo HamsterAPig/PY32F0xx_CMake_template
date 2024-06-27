@@ -14,10 +14,13 @@ set(CMAKE_C_EXTENSIONS ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# MCU类型
-if (NOT DEFINED MCU_TYPE)
-    message(WARNING "you must define MCU_TYPE, such as PY32F002Ax5, PY32F002Bx5, PY32F003x4, PY32F003x6, PY32F003x8, PY32F030x6, PY32F030x8, PY32F072xB")
-endif ()
+# Check if SELECTED_DEVICE is provided
+if(NOT DEFINED SELECTED_DEVICE)
+    message(FATAL_ERROR "Please specify the target device using -DSELECTED_DEVICE=<device> (e.g., -DPY32F030x8)")
+endif()
+
+# todo)) For the time being, I have not sorted out the relationship between each model and the ld file, so I will assign them directly first, and some models may have errors
+set(MCU_TYPE ${SELECTED_DEVICE}) # PY32F002Ax5, PY32F002Bx5, PY32F003x4, PY32F003x6, PY32F003x8, PY32F030x6, PY32F030x8, PY32F072xB
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
@@ -41,8 +44,15 @@ endif()
 
 add_executable(${CMAKE_PROJECT_NAME})
 
+# 根据选择的宏定义添加编译选项
+if(SELECTED_DEVICE)
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC
+            ${SELECTED_DEVICE}
+    )
+    message("Selected device: ${SELECTED_DEVICE}")
+endif ()
+
 target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC
-        PY32F003x4
 )
 
 add_subdirectory(cmake/PY32F0xxLib)

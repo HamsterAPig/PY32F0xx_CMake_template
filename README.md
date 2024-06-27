@@ -153,7 +153,7 @@ In Ubuntu, .profile will take care of the PATH, run `source ~/.profile` to make 
 ## 4. Use CMake to Generate
 Use `CMake -D` to specify the generation of relevant definitions, as a example, you can run
 ```shell
-cmake -DMCU_TYPE=PY32F030x8
+cmake -DSELECTED_DEVICE=PY32F030x8
 ```
 
 ## 5. Compiling And Flashing

@@ -1,10 +1,3 @@
-# Ensure the MCU_TYPE variable is used correctly
-if(DEFINED MCU_TYPE)
-    message(STATUS "MCU_TYPE is: ${MCU_TYPE}")
-else()
-    message(WARNING "MCU_TYPE is not defined")
-endif()
-
 set(CMAKE_SYSTEM_NAME               Generic)
 set(CMAKE_SYSTEM_PROCESSOR          arm)
 
