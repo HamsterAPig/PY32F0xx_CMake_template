@@ -4,8 +4,6 @@ cmake_minimum_required(VERSION 3.22)
 option(USE_LL_LIB "Use LL library instead of HAL" OFF)
 option(ENABLE_PRINTF_FLOAT "Enable printf float %f support" OFF)
 option(USE_FREERTOS "Build with FreeRTOS" OFF)
-option(USE_DSP "Build with CMSIS DSP functions" OFF)
-option(USE_EPAPER "Build with Waveshare e-paper lib" OFF)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
