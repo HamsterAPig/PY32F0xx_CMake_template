@@ -156,6 +156,8 @@ Use `CMake -D` to specify the generation of relevant definitions, as a example, 
 cmake -DSELECTED_DEVICE=PY32F030x8
 ```
 
+### FreeRTOS Support
+Use `CMake -DUSE_FREERTOS=ON` to enable FreeRTOS Support, and use `-DFREERTOS_HEAP=4` to specify how to use what memory allocation
 ## 5. Compiling And Flashing
 
 ```bash
