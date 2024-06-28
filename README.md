@@ -173,7 +173,7 @@ make flash
 - [x] Support PY32F002B
 - [x] Support PY32F07x
 - [x] Support LL Option
-- [ ] Support FreeRTOS Option
+- [x] Support FreeRTOS Option
 - [ ] Support EPaper Option
 
 # Try Other Examples

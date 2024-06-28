@@ -40,24 +40,43 @@ target_include_directories(${PROJECT_NAME} INTERFACE
         ../../Libraries/CMSIS/Device/PY32F0xx/Include
 )
 
+if(USE_FREERTOS)
+    message("Enable FreeRTOS Support")
+    target_include_directories(${PROJECT_NAME} INTERFACE
+            ../../Libraries/FreeRTOS/include
+            ../../Libraries/FreeRTOS/portable/GCC/ARM_CM0
+    )
+    file(GLOB SOURCES
+            "../../Libraries/FreeRTOS/*.c"
+            "../../Libraries/FreeRTOS/portable/GCC/ARM_CM0/*.c"
+    )
+    if (NOT DEFINED FREERTOS_HEAP)
+        message("Not Defined FREERTOS_HEAP, default set it -DFREERTOS_HEAP=4")
+        set(FREERTOS_HEAP "4")
+    endif ()
+    list(APPEND SOURCES "../../Libraries/FreeRTOS/portable/MemMang/heap_${FREERTOS_HEAP}.c")
+endif ()
+
 if (USE_LL_LIB)
     target_include_directories(${PROJECT_NAME} INTERFACE
             ../../Libraries/${MCU_NUMBER}_LL_Driver/Inc
             ../../Libraries/${MCU_NUMBER}_LL_BSP/Inc
     )
-    file(GLOB SOURCES
+    file(GLOB SOURCES_TMP
             "../../Libraries/${MCU_NUMBER}_LL_BSP/Src/*.c"
             "../../Libraries/${MCU_NUMBER}_LL_Driver/Src/*.c"
     )
+    list(APPEND SOURCES ${SOURCES_TMP})
 else ()
     target_include_directories(${PROJECT_NAME} INTERFACE
             ../../Libraries/${MCU_NUMBER}_HAL_Driver/Inc
             ../../Libraries/${MCU_NUMBER}_HAL_BSP/Inc
     )
-    file(GLOB SOURCES
+    file(GLOB SOURCES_TMP
             "../../Libraries/${MCU_NUMBER}_HAL_BSP/Src/*.c"
             "../../Libraries/${MCU_NUMBER}_HAL_Driver/Src/*.c"
     )
+    list(APPEND SOURCES ${SOURCES_TMP})
 endif ()
 
 string(TOLOWER "${MCU_NUMBER}" LOWERCASE_MCU_NUMBER)
