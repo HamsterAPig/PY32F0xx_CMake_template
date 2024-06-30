@@ -1,0 +1,22 @@
+Language:  Cpp
+BasedOnStyle: LLVM
+IndentWidth: 4
+UseTab: Never
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterFunction: true
+  AfterClass: true
+  AfterControlStatement: false
+  AfterEnum: true
+  AfterNamespace: false
+  BeforeCatch: false
+  BeforeElse: false
+
+AlignTrailingComments: true
+# 自定义多行注释的对齐规则
+CommentPragmas: "^\\s*//\\s"
+
+AllowShortIfStatementsOnASingleLine: false
+ColumnLimit: 80
+SpacesBeforeTrailingComments: 1
+IndentCaseLabels: false
