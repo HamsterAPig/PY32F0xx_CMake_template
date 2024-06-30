@@ -62,14 +62,14 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-        Examples/PY32F0xx/FreeRTOS/Tasks/Blink/main.c
-        Examples/PY32F0xx/FreeRTOS/Tasks/Blink/py32f0xx_hal_msp.c
-        Examples/PY32F0xx/FreeRTOS/Tasks/Blink/py32f0xx_it.c
+        User/py32f0xx_hal_msp.c
+        User/py32f0xx_it.c
+        User/main.c
 )
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
-        Examples/PY32F0xx/FreeRTOS/Tasks/Blink
+        User
 )
 
 # Add project symbols (macros)
@@ -81,60 +81,8 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         PY32F0xxLib
 )
 
-## 包含目录
-#include_directories(
-#        Libraries/CMSIS/Core/Include
-#        Libraries/CMSIS/Device/PY32F0xx/Include
-#        User
-#)
-#
-## 源文件目录
-#file(GLOB_RECURSE CSOURCES "User/*.c")
-#file(GLOB_RECURSE CPPSOURCES "User/*.cpp")
-#file(GLOB_RECURSE ASOURCES "User/*.s")
-#
-## 添加FreeRTOS库
-#if(USE_FREERTOS)
-#    file(GLOB_RECURSE FREERTOS_SOURCES "Libraries/FreeRTOS/*.c" "Libraries/FreeRTOS/portable/GCC/ARM_CM0/*.c")
-#    list(APPEND CSOURCES ${FREERTOS_SOURCES})
-#    include_directories(Libraries/FreeRTOS Libraries/FreeRTOS/portable/GCC/ARM_CM0)
-#endif()
-#
-## 添加DSP库
-#if(USE_DSP)
-#    file(GLOB_RECURSE DSP_SOURCES "Libraries/CMSIS/DSP/Source/*.c")
-#    list(APPEND CSOURCES ${DSP_SOURCES})
-#    include_directories(Libraries/CMSIS/DSP/Include Libraries/CMSIS/DSP/PrivateInclude)
-#endif()
-#
-## 添加EPaper库
-#if(USE_EPAPER)
-#    file(GLOB_RECURSE EPAPER_SOURCES "Libraries/EPaper/**/*.c")
-#    list(APPEND CSOURCES ${EPAPER_SOURCES})
-#    include_directories(Libraries/EPaper/Lib Libraries/EPaper/Examples Libraries/EPaper/Fonts Libraries/EPaper/GUI)
-#endif()
-#
-## 设置目标文件
-#add_executable(${PROJECT_NAME}.elf ${CSOURCES} ${CPPSOURCES} ${ASOURCES})
-
-## 设置链接脚本
-#set(LDSCRIPT "Libraries/LDScripts/${MCU_TYPE}.ld")
-#set_target_properties(${PROJECT_NAME}.elf PROPERTIES LINK_DEPENDS ${LDSCRIPT})
-#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T${LDSCRIPT}")
-#
-## 生成二进制文件
-#add_custom_command(TARGET ${PROJECT_NAME}.elf POST_BUILD
-#        COMMAND ${CMAKE_OBJCOPY} -O binary ${PROJECT_NAME}.elf ${BUILD_DIR}/${PROJECT_NAME}.bin
-#        COMMAND ${CMAKE_OBJCOPY} -O ihex ${PROJECT_NAME}.elf ${BUILD_DIR}/${PROJECT_NAME}.hex
-#        COMMAND ${CMAKE_SIZE} ${PROJECT_NAME}.elf
-#)
-
-## 清理命令
-#add_custom_target(clean
-#        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/cmake_clean.cmake
-#)
-#
-## 生成清理文件
-#file(WRITE ${CMAKE_BINARY_DIR}/cmake_clean.cmake "
-#file(REMOVE_RECURSE ${BUILD_DIR})
-#")
+# Add custom command to convert .elf to .bin
+add_custom_command(
+        TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:${CMAKE_PROJECT_NAME}> ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.bin
+)
