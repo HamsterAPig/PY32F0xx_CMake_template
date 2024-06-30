@@ -84,5 +84,12 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
 # Add custom command to convert .elf to .bin
 add_custom_command(
         TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E echo "Converting ${CMAKE_PROJECT_NAME} to binary..."
         COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:${CMAKE_PROJECT_NAME}> ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.bin
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMAND ${CMAKE_COMMAND} -E echo "Erase ${SELECTED_DEVICE} ..."
+        COMMAND ${CMAKE_COMMAND} -E env pyocd erase -t ${SELECTED_DEVICE} --chip --config ${PROJECT_SOURCE_DIR}/Misc/pyocd.yaml
+        COMMAND ${CMAKE_COMMAND} -E echo "Flash ${CMAKE_PROJECT_NAME} to ${SELECTED_DEVICE}"
+        COMMAND ${CMAKE_COMMAND} -E env  pyocd load ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.bin -t ${SELECTED_DEVICE} --config ${PROJECT_SOURCE_DIR}/Misc/pyocd.yaml
+        COMMENT "Converting to binary"
 )
